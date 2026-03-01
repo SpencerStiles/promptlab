@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// A prompt template with variables and metadata.
+model Prompt {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @default("")
+  content     String
+  systemMsg   String   @default("")
+  tags        String   @default("") // comma-separated
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  versions    PromptVersion[]
+  runs        Run[]
+
+  @@index([name])
+}
+
+/// An immutable snapshot of a prompt at a point in time.
+model PromptVersion {
+  id        String   @id @default(cuid())
+  version   Int
+  content   String
+  systemMsg String   @default("")
+  note      String   @default("")
+  createdAt DateTime @default(now())
+
+  promptId  String
+  prompt    Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  runs      Run[]
+
+  @@unique([promptId, version])
+  @@index([promptId])
+}
+
+/// A single execution of a prompt against a model.
+model Run {
+  id               String   @id @default(cuid())
+  model            String
+  provider         String   // openai | anthropic
+  variables        String   @default("{}") // JSON
+  resolvedPrompt   String
+  systemMsg        String   @default("")
+  response         String
+  promptTokens     Int      @default(0)
+  completionTokens Int      @default(0)
+  totalTokens      Int      @default(0)
+  durationMs       Int      @default(0)
+  temperature      Float    @default(0.7)
+  maxTokens        Int      @default(2048)
+  error            String?
+  rating           Int?     // 1-5 user rating
+  notes            String   @default("")
+  createdAt        DateTime @default(now())
+
+  promptId  String
+  prompt    Prompt        @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  versionId String?
+  version   PromptVersion? @relation(fields: [versionId], references: [id])
+
+  @@index([promptId])
+  @@index([model])
+  @@index([createdAt])
+}
