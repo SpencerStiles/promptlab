@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { listPrompts } from '@/lib/actions';
+import { listPrompts } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 

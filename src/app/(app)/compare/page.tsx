@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MODELS } from '@/lib/models';
-import { listPrompts, compareModels } from '@/lib/actions';
+import { compareModels } from '@/lib/actions';
+import { listPrompts } from '@/lib/data';
 
 export default function ComparePage() {
   const [prompts, setPrompts] = useState<Array<{ id: string; name: string }>>([]);
@@ -33,9 +34,10 @@ export default function ComparePage() {
   }
 
   // Load prompts on mount
-  if (!loaded) {
+  useEffect(() => {
     loadPrompts();
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function toggleModel(modelId: string) {
     setSelectedModels((prev) =>

@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[**Live Demo →**](https://promptlab.spencerstiles.dev) | [**Hosted ($19/mo) →**](https://cal.com/spencerstiles)
+[**Live Demo →**](https://promptlab.spencerstiles.com) | [**Hosted ($19/mo) →**](https://cal.com/spencerstiles)
 
 ---
 

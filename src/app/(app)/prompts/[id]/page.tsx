@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getPrompt } from '@/lib/actions';
+import { getPrompt } from '@/lib/data';
 import { MODELS } from '@/lib/models';
 import { extractVariables } from '@/lib/variables';
 import PromptPlayground from './playground';

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getDashboardStats } from '@/lib/actions';
+import { getDashboardStats } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
