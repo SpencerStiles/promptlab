@@ -5,6 +5,7 @@ import { runCompletion } from './providers';
 import { resolveTemplate } from './variables';
 import { getModel } from './models';
 import { revalidatePath } from 'next/cache';
+import { logger } from './logger';
 
 // ──────────────────────────────────────────────
 // Prompts
@@ -43,7 +44,7 @@ export async function createPrompt(data: {
     revalidatePath(`/prompts/${prompt.id}`);
     return prompt;
   } catch (err) {
-    console.error('[createPrompt]', err);
+    logger.error('Failed in createPrompt', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Failed to create prompt');
   }
 }
@@ -96,7 +97,7 @@ export async function updatePrompt(
     revalidatePath(`/prompts/${id}`);
     return updated;
   } catch (err) {
-    console.error('[updatePrompt]', err);
+    logger.error('Failed in updatePrompt', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Failed to update prompt');
   }
 }
@@ -106,7 +107,7 @@ export async function deletePrompt(id: string) {
     await prisma.prompt.delete({ where: { id } });
     revalidatePath('/');
   } catch (err) {
-    console.error('[deletePrompt]', err);
+    logger.error('Failed in deletePrompt', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Failed to delete prompt');
   }
 }
@@ -118,7 +119,7 @@ export async function listPrompts() {
       include: { _count: { select: { versions: true, runs: true } } },
     });
   } catch (err) {
-    console.error('[listPrompts]', err);
+    logger.error('Failed in listPrompts', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Failed to list prompts');
   }
 }
@@ -133,7 +134,7 @@ export async function getPrompt(id: string) {
       },
     });
   } catch (err) {
-    console.error('[getPrompt]', err);
+    logger.error('Failed in getPrompt', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Failed to get prompt');
   }
 }
@@ -192,7 +193,7 @@ export async function executeRun(data: {
     revalidatePath(`/prompts/${data.promptId}`);
     return run;
   } catch (err) {
-    console.error('[executeRun]', err);
+    logger.error('Failed in executeRun', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Failed to execute run');
   }
 }
@@ -204,7 +205,7 @@ export async function rateRun(runId: string, rating: number) {
       data: { rating },
     });
   } catch (err) {
-    console.error('[rateRun]', err);
+    logger.error('Failed in rateRun', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Failed to rate run');
   }
 }
@@ -234,7 +235,7 @@ export async function compareModels(data: {
     );
     return runs;
   } catch (err) {
-    console.error('[compareModels]', err);
+    logger.error('Failed in compareModels', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Failed to compare models');
   }
 }
@@ -263,7 +264,7 @@ export async function getDashboardStats() {
       recentRuns,
     };
   } catch (err) {
-    console.error('[getDashboardStats]', err);
+    logger.error('Failed in getDashboardStats', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Failed to get dashboard stats');
   }
 }

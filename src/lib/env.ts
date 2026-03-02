@@ -9,6 +9,12 @@ const schema = z.object({
   OPENAI_API_KEY: z.string().startsWith('sk-').optional(),
   ANTHROPIC_API_KEY: z.string().startsWith('sk-ant-').optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+
+  // Authentication (NextAuth)
+  NEXTAUTH_SECRET: z.string().min(32).optional(),
+  NEXTAUTH_URL: z.string().url().optional(),
+  GITHUB_CLIENT_ID: z.string().optional(),
+  GITHUB_CLIENT_SECRET: z.string().optional(),
 });
 
 export const env = schema.parse(process.env);

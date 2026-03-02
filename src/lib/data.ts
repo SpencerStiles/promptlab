@@ -1,5 +1,6 @@
 // Plain async data-fetching functions (no 'use server' — safe to call during render)
 import { prisma } from './db';
+import { logger } from './logger';
 
 export async function getDashboardStats() {
   try {
@@ -20,7 +21,7 @@ export async function getDashboardStats() {
       recentRuns,
     };
   } catch (err) {
-    console.error('[getDashboardStats]', err);
+    logger.error('Failed in getDashboardStats', { error: err instanceof Error ? err.message : 'Unknown error' });
     return { promptCount: 0, runCount: 0, totalTokens: 0, recentRuns: [] };
   }
 }
@@ -32,7 +33,7 @@ export async function listPrompts() {
       include: { _count: { select: { versions: true, runs: true } } },
     });
   } catch (err) {
-    console.error('[listPrompts]', err);
+    logger.error('Failed in listPrompts', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Failed to list prompts');
   }
 }
@@ -47,7 +48,7 @@ export async function getPrompt(id: string) {
       },
     });
   } catch (err) {
-    console.error('[getPrompt]', err);
+    logger.error('Failed in getPrompt', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Failed to get prompt');
   }
 }

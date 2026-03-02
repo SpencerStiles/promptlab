@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { runCompletion } from '@/lib/providers';
 import { getModel } from '@/lib/models';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,6 +36,7 @@ export async function POST(req: NextRequest) {
       durationMs: result.durationMs,
     });
   } catch (err) {
+    logger.error('Failed to handle POST /api/playground', { error: err instanceof Error ? err.message : 'Unknown error' });
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Internal error' },
       { status: 500 },
