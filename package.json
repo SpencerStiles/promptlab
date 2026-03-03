@@ -2,7 +2,7 @@
   "name": "promptlab",
   "version": "0.1.0",
   "private": true,
-  "description": "Open-source prompt engineering toolkit — test, version, and compare prompts across AI models",
+  "description": "Open-source prompt engineering toolkit \u2014 test, version, and compare prompts across AI models",
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
@@ -42,5 +42,6 @@
     "typescript": "^5.6.0",
     "vitest": "^2.1.0",
     "@vitejs/plugin-react": "^4.3.0"
-  }
+  },
+  "packageManager": "pnpm@10.30.3"
 }
