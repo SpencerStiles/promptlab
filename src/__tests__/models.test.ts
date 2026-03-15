@@ -18,8 +18,8 @@ describe('getModel', () => {
     expect(getModel('unknown-model')).toBeUndefined()
   })
 
-  it('returns the correct ModelDef for claude-3-5-sonnet-20241022', () => {
-    const model = getModel('claude-3-5-sonnet-20241022')
+  it('returns the correct ModelDef for claude-sonnet-4-6', () => {
+    const model = getModel('claude-sonnet-4-6')
     expect(model).toBeDefined()
     expect(model!.provider).toBe('anthropic')
   })

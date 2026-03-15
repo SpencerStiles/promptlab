@@ -40,19 +40,19 @@ if (typeof setInterval !== 'undefined') {
 export function checkRateLimit(
   ip: string,
   limit = DEFAULT_LIMIT,
-): { allowed: boolean; remaining: number; resetAt: number } {
+): { allowed: boolean; remaining: number; resetAt: number; limit: number } {
   const now = Date.now();
   const entry = store.get(ip);
 
   if (!entry || entry.resetAt < now) {
     store.set(ip, { count: 1, resetAt: now + WINDOW_MS });
-    return { allowed: true, remaining: limit - 1, resetAt: now + WINDOW_MS };
+    return { allowed: true, remaining: limit - 1, resetAt: now + WINDOW_MS, limit };
   }
 
   if (entry.count >= limit) {
-    return { allowed: false, remaining: 0, resetAt: entry.resetAt };
+    return { allowed: false, remaining: 0, resetAt: entry.resetAt, limit };
   }
 
   entry.count += 1;
-  return { allowed: true, remaining: limit - entry.count, resetAt: entry.resetAt };
+  return { allowed: true, remaining: limit - entry.count, resetAt: entry.resetAt, limit };
 }

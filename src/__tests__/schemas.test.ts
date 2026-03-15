@@ -83,7 +83,7 @@ describe('executeRunSchema', () => {
 
 describe('playgroundSchema', () => {
   it('passes for valid input', () => {
-    const result = playgroundSchema.safeParse({ userMsg: 'Hello!' })
+    const result = playgroundSchema.safeParse({ model: 'gpt-4o', userMsg: 'Hello!' })
     expect(result.success).toBe(true)
   })
 
