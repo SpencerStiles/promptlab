@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { MODELS } from '@/lib/models';
-import { compareModels } from '@/lib/actions';
-import { listPrompts } from '@/lib/data';
+import { compareModels, listPrompts } from '@/lib/actions';
 import { extractVariables } from '@/lib/variables';
 
 type PromptItem = {

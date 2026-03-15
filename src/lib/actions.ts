@@ -55,6 +55,20 @@ async function withAction<T>(
 // Prompts
 // ──────────────────────────────────────────────
 
+// Listed here (not only in data.ts) so client components can import a server action
+// instead of calling data.ts directly (which bundles Prisma into the browser bundle).
+export async function listPrompts() {
+  const session = await getServerSession(authOptions);
+  const scope = getUserScope(session);
+  return withAction('listPrompts', {}, async () =>
+    prisma.prompt.findMany({
+      where: scope,
+      orderBy: { updatedAt: 'desc' },
+      include: { _count: { select: { versions: true, runs: true } } },
+    }),
+  );
+}
+
 export async function createPrompt(data: {
   name: string;
   description?: string;
