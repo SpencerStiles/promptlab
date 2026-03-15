@@ -15,7 +15,10 @@ const schema = z.object({
   NEXTAUTH_URL: z.string().url().optional(),
   GITHUB_CLIENT_ID: z.string().optional(),
   GITHUB_CLIENT_SECRET: z.string().optional(),
-});
+}).refine(
+  (data) => !data.GITHUB_CLIENT_ID || !!data.NEXTAUTH_SECRET,
+  { message: 'NEXTAUTH_SECRET is required when GITHUB_CLIENT_ID is set', path: ['NEXTAUTH_SECRET'] }
+);
 
 export const env = schema.parse(process.env);
 export type Env = z.infer<typeof schema>;

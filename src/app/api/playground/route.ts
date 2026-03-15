@@ -2,26 +2,35 @@ import { NextRequest, NextResponse } from 'next/server';
 import { runCompletion } from '@/lib/providers';
 import { getModel } from '@/lib/models';
 import { logger } from '@/lib/logger';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { playgroundSchema } from '@/lib/schemas';
 
 export async function POST(req: NextRequest) {
+  // Rate limit check
+  const ip = req.headers.get('x-forwarded-for') ?? req.ip ?? 'unknown';
+  const { allowed } = checkRateLimit(ip);
+  if (!allowed) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+  }
+
   try {
     const body = await req.json();
-    const { model, systemMsg, userMsg, temperature, maxTokens } = body;
-
-    if (!userMsg?.trim()) {
-      return NextResponse.json({ error: 'userMsg is required' }, { status: 400 });
+    const parsed = playgroundSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
     }
+    const { model, systemMsg, userMsg, temperature, maxTokens } = parsed.data;
 
-    const modelDef = getModel(model ?? 'gpt-4o-mini');
+    const modelDef = getModel(model);
     const provider = modelDef?.provider ?? 'openai';
 
     const result = await runCompletion({
-      model: model ?? 'gpt-4o-mini',
+      model,
       provider,
-      systemMsg: systemMsg ?? '',
+      systemMsg,
       userMsg,
-      temperature: temperature ?? 0.7,
-      maxTokens: maxTokens ?? 2048,
+      temperature,
+      maxTokens,
     });
 
     if (result.error) {
