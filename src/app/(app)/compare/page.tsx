@@ -4,12 +4,21 @@ import { useState, useEffect } from 'react';
 import { MODELS } from '@/lib/models';
 import { compareModels } from '@/lib/actions';
 import { listPrompts } from '@/lib/data';
+import { extractVariables } from '@/lib/variables';
+
+type PromptItem = {
+  id: string;
+  name: string;
+  content: string;
+  systemMsg: string;
+};
 
 export default function ComparePage() {
-  const [prompts, setPrompts] = useState<Array<{ id: string; name: string }>>([]);
+  const [prompts, setPrompts] = useState<PromptItem[]>([]);
   const [selectedPromptId, setSelectedPromptId] = useState('');
   const [selectedModels, setSelectedModels] = useState<string[]>(['gpt-4o', 'gpt-4o-mini']);
   const [temperature, setTemperature] = useState(0.7);
+  const [variableValues, setVariableValues] = useState<Record<string, string>>({});
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<
     Array<{
@@ -26,7 +35,14 @@ export default function ComparePage() {
   async function loadPrompts() {
     if (loaded) return;
     const data = await listPrompts();
-    setPrompts(data.map((p) => ({ id: p.id, name: p.name })));
+    setPrompts(
+      data.map((p) => ({
+        id: p.id,
+        name: p.name,
+        content: p.content,
+        systemMsg: p.systemMsg,
+      })),
+    );
     if (data.length > 0 && !selectedPromptId) {
       setSelectedPromptId(data[0].id);
     }
@@ -38,6 +54,16 @@ export default function ComparePage() {
     loadPrompts();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Reset variable values when selected prompt changes
+  useEffect(() => {
+    setVariableValues({});
+  }, [selectedPromptId]);
+
+  const selectedPrompt = prompts.find((p) => p.id === selectedPromptId);
+  const variables = selectedPrompt
+    ? extractVariables((selectedPrompt.content ?? '') + ' ' + (selectedPrompt.systemMsg ?? ''))
+    : [];
 
   function toggleModel(modelId: string) {
     setSelectedModels((prev) =>
@@ -55,6 +81,7 @@ export default function ComparePage() {
       const runs = await compareModels({
         promptId: selectedPromptId,
         models: selectedModels,
+        variables: variableValues,
         temperature,
       });
       setResults(runs);
@@ -127,6 +154,27 @@ export default function ComparePage() {
             className="w-48"
           />
         </div>
+
+        {/* Variable inputs */}
+        {variables.length > 0 && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Variables</label>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {variables.map((v) => (
+                <div key={v}>
+                  <label className="block text-xs font-mono text-brand-600">{'{{' + v + '}}'}</label>
+                  <input
+                    type="text"
+                    value={variableValues[v] ?? ''}
+                    onChange={(e) => setVariableValues((prev) => ({ ...prev, [v]: e.target.value }))}
+                    placeholder={`Value for ${v}`}
+                    className="mt-0.5 block w-full rounded-lg border px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <button
           onClick={handleCompare}

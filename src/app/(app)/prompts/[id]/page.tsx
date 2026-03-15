@@ -3,6 +3,7 @@ import { getPrompt } from '@/lib/data';
 import { MODELS } from '@/lib/models';
 import { extractVariables } from '@/lib/variables';
 import PromptPlayground from './playground';
+import PromptEditor from './PromptEditor';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,50 +19,17 @@ export default async function PromptDetailPage({ params }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{prompt.name}</h1>
-          {prompt.description && (
-            <p className="mt-1 text-sm text-gray-500">{prompt.description}</p>
-          )}
-          {prompt.tags && (
-            <div className="mt-2 flex gap-1">
-              {prompt.tags.split(',').filter(Boolean).map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full bg-brand-50 px-2 py-0.5 text-xs text-brand-600"
-                >
-                  {tag.trim()}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="text-right text-xs text-gray-400">
-          <p>v{prompt.versions[0]?.version ?? 1}</p>
-          <p>{prompt.versions.length} versions</p>
-          <p>{prompt.runs.length} runs</p>
-        </div>
-      </div>
-
-      {/* Current prompt */}
-      <div className="rounded-lg border bg-white p-4">
-        {prompt.systemMsg && (
-          <div className="mb-3">
-            <p className="text-xs font-medium uppercase text-gray-400">System</p>
-            <pre className="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-3 font-mono text-sm text-gray-700">
-              {prompt.systemMsg}
-            </pre>
-          </div>
-        )}
-        <div>
-          <p className="text-xs font-medium uppercase text-gray-400">Prompt</p>
-          <pre className="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-3 font-mono text-sm text-gray-700">
-            {prompt.content}
-          </pre>
-        </div>
-      </div>
+      <PromptEditor
+        promptId={prompt.id}
+        name={prompt.name}
+        description={prompt.description}
+        content={prompt.content}
+        systemMsg={prompt.systemMsg}
+        tags={prompt.tags}
+        versionCount={prompt.versions.length}
+        runCount={prompt.runs.length}
+        currentVersion={prompt.versions[0]?.version ?? 1}
+      />
 
       {/* Playground */}
       <PromptPlayground
