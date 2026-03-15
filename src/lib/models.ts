@@ -17,40 +17,40 @@ export const MODELS: ModelDef[] = [
     name: 'GPT-4o',
     provider: 'openai',
     contextWindow: 128_000,
-    inputCostPer1M: 250,
-    outputCostPer1M: 1000,
+    inputCostPer1M: 250,   // $2.50
+    outputCostPer1M: 1000, // $10.00
   },
   {
     id: 'gpt-4o-mini',
     name: 'GPT-4o Mini',
     provider: 'openai',
     contextWindow: 128_000,
-    inputCostPer1M: 15,
-    outputCostPer1M: 60,
+    inputCostPer1M: 15,  // $0.15
+    outputCostPer1M: 60, // $0.60
   },
   {
-    id: 'gpt-3.5-turbo',
-    name: 'GPT-3.5 Turbo',
-    provider: 'openai',
-    contextWindow: 16_385,
-    inputCostPer1M: 50,
-    outputCostPer1M: 150,
-  },
-  {
-    id: 'claude-3-5-sonnet-20241022',
-    name: 'Claude 3.5 Sonnet',
+    id: 'claude-opus-4-6',
+    name: 'Claude Opus 4.6',
     provider: 'anthropic',
     contextWindow: 200_000,
-    inputCostPer1M: 300,
-    outputCostPer1M: 1500,
+    inputCostPer1M: 1500,  // $15.00
+    outputCostPer1M: 7500, // $75.00
   },
   {
-    id: 'claude-3-5-haiku-20241022',
-    name: 'Claude 3.5 Haiku',
+    id: 'claude-sonnet-4-6',
+    name: 'Claude Sonnet 4.6',
     provider: 'anthropic',
     contextWindow: 200_000,
-    inputCostPer1M: 25,
-    outputCostPer1M: 125,
+    inputCostPer1M: 300,   // $3.00
+    outputCostPer1M: 1500, // $15.00
+  },
+  {
+    id: 'claude-haiku-4-5-20251001',
+    name: 'Claude Haiku 4.5',
+    provider: 'anthropic',
+    contextWindow: 200_000,
+    inputCostPer1M: 80,  // $0.80
+    outputCostPer1M: 400, // $4.00
   },
 ];
 

@@ -1,17 +1,34 @@
 // Plain async data-fetching functions (no 'use server' — safe to call during render)
+import { getServerSession } from 'next-auth';
 import { prisma } from './db';
 import { logger } from './logger';
+import { authOptions, getUserScope } from './auth';
 
 export async function getDashboardStats() {
   try {
+    const session = await getServerSession(authOptions);
+    const scope = getUserScope(session);
+
     const [promptCount, runCount, totalTokens, recentRuns] = await Promise.all([
-      prisma.prompt.count(),
-      prisma.run.count(),
-      prisma.run.aggregate({ _sum: { totalTokens: true } }),
+      prisma.prompt.count({ where: scope }),
+      prisma.run.count({
+        where: scope.userId
+          ? { prompt: { userId: scope.userId } }
+          : {},
+      }),
+      prisma.run.aggregate({
+        _sum: { totalTokens: true },
+        where: scope.userId
+          ? { prompt: { userId: scope.userId } }
+          : {},
+      }),
       prisma.run.findMany({
         orderBy: { createdAt: 'desc' },
         take: 10,
         include: { prompt: { select: { name: true } } },
+        where: scope.userId
+          ? { prompt: { userId: scope.userId } }
+          : {},
       }),
     ]);
     return {
@@ -28,7 +45,11 @@ export async function getDashboardStats() {
 
 export async function listPrompts() {
   try {
+    const session = await getServerSession(authOptions);
+    const scope = getUserScope(session);
+
     return prisma.prompt.findMany({
+      where: scope,
       orderBy: { updatedAt: 'desc' },
       include: { _count: { select: { versions: true, runs: true } } },
     });
@@ -40,8 +61,11 @@ export async function listPrompts() {
 
 export async function getPrompt(id: string) {
   try {
+    const session = await getServerSession(authOptions);
+    const scope = getUserScope(session);
+
     return prisma.prompt.findUnique({
-      where: { id },
+      where: { id, ...scope },
       include: {
         versions: { orderBy: { version: 'desc' } },
         runs: { orderBy: { createdAt: 'desc' }, take: 50 },

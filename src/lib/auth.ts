@@ -1,5 +1,5 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import type { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions, Session } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import { prisma } from "@/lib/db";
 
@@ -28,3 +28,16 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
 };
+
+/**
+ * Returns a Prisma where-clause that scopes queries to the authenticated user.
+ * When auth is disabled (no session), returns {} which matches all records.
+ *
+ *   getUserScope(session)
+ *     ├── session with userId → { userId: session.user.id }
+ *     └── no session / no userId → {}
+ */
+export function getUserScope(session: Session | null): { userId?: string } {
+  const userId = session?.user?.id;
+  return userId ? { userId } : {};
+}

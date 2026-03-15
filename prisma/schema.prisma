@@ -10,6 +10,7 @@ datasource db {
 /// A prompt template with variables and metadata.
 model Prompt {
   id          String   @id @default(cuid())
+  userId      String?  // null = legacy/no-auth; set when auth is enabled
   name        String
   description String   @default("")
   content     String
@@ -22,6 +23,7 @@ model Prompt {
   runs        Run[]
 
   @@index([name])
+  @@index([userId])
 }
 
 /// An immutable snapshot of a prompt at a point in time.

@@ -40,6 +40,18 @@ function getAnthropic(): Anthropic {
 }
 
 async function callOpenAI(req: CompletionRequest): Promise<CompletionResult> {
+  // Key check at call time — return error result rather than letting SDK throw
+  if (!process.env.OPENAI_API_KEY) {
+    return {
+      content: '',
+      promptTokens: 0,
+      completionTokens: 0,
+      totalTokens: 0,
+      durationMs: 0,
+      error: 'OPENAI_API_KEY not configured',
+    };
+  }
+
   const start = Date.now();
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [];
   if (req.systemMsg) messages.push({ role: 'system', content: req.systemMsg });
@@ -52,16 +64,31 @@ async function callOpenAI(req: CompletionRequest): Promise<CompletionResult> {
     max_tokens: req.maxTokens,
   });
 
+  const content = response.choices[0]?.message?.content ?? '';
+
   return {
-    content: response.choices[0]?.message?.content ?? '',
+    content,
     promptTokens: response.usage?.prompt_tokens ?? 0,
     completionTokens: response.usage?.completion_tokens ?? 0,
     totalTokens: response.usage?.total_tokens ?? 0,
     durationMs: Date.now() - start,
+    ...(content === '' ? { error: 'Model returned empty response' } : {}),
   };
 }
 
 async function callAnthropic(req: CompletionRequest): Promise<CompletionResult> {
+  // Key check at call time — return error result rather than letting SDK throw
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return {
+      content: '',
+      promptTokens: 0,
+      completionTokens: 0,
+      totalTokens: 0,
+      durationMs: 0,
+      error: 'ANTHROPIC_API_KEY not configured',
+    };
+  }
+
   const start = Date.now();
 
   const message = await getAnthropic().messages.create({
@@ -82,9 +109,19 @@ async function callAnthropic(req: CompletionRequest): Promise<CompletionResult> 
     completionTokens: outputTokens,
     totalTokens: inputTokens + outputTokens,
     durationMs: Date.now() - start,
+    ...(text === '' ? { error: 'Model returned empty response' } : {}),
   };
 }
 
+/*
+ * Provider routing:
+ *
+ *  request ──► key check ──► provider call ──► content check ──► result
+ *                  │                │                │
+ *              [missing]        [error]          [empty]
+ *                  ▼                ▼                ▼
+ *             error result    error result     soft error result
+ */
 export async function runCompletion(req: CompletionRequest): Promise<CompletionResult> {
   try {
     if (req.provider === 'anthropic') {
