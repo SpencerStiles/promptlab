@@ -94,6 +94,7 @@ export default function PromptPlayground({ promptId, variables, models }: Props)
               value={temperature}
               onChange={(e) => setTemperature(parseFloat(e.target.value))}
               className="mt-2 w-full"
+              suppressHydrationWarning
             />
           </div>
           <div className="w-32">

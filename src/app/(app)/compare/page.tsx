@@ -109,7 +109,8 @@ export default function ComparePage() {
             onChange={(e) => setSelectedPromptId(e.target.value)}
             className="mt-1 block w-full rounded-lg border px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           >
-            {prompts.length === 0 && <option>No prompts available</option>}
+            {!loaded && <option disabled>Loading prompts...</option>}
+            {loaded && prompts.length === 0 && <option>No prompts available</option>}
             {prompts.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
@@ -151,6 +152,7 @@ export default function ComparePage() {
             value={temperature}
             onChange={(e) => setTemperature(parseFloat(e.target.value))}
             className="w-48"
+            suppressHydrationWarning
           />
         </div>
 

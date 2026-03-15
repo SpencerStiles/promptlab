@@ -95,6 +95,7 @@ export default function PlaygroundPage() {
                   value={temperature}
                   onChange={(e) => setTemperature(parseFloat(e.target.value))}
                   className="mt-1 w-full"
+                  suppressHydrationWarning
                 />
               </div>
               <div className="w-28">

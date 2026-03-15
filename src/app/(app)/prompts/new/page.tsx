@@ -74,8 +74,9 @@ export default function NewPromptPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Prompt Template</label>
+            <label htmlFor="prompt-content" className="block text-sm font-medium text-gray-700">Prompt Template</label>
             <textarea
+              id="prompt-content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Enter your prompt here. Use {{variable}} for dynamic values..."
