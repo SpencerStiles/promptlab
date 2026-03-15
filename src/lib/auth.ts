@@ -1,5 +1,5 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import type { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions, Session } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import { prisma } from "@/lib/db";
 
@@ -28,3 +28,13 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
 };
+
+/**
+ * Extract user scope from a NextAuth session.
+ * Returns { userId } if the session contains a user ID, otherwise {}.
+ */
+export function getUserScope(session: Session | null): { userId?: string } {
+  const userId = (session?.user as { id?: string } | undefined)?.id;
+  if (!userId) return {};
+  return { userId };
+}
