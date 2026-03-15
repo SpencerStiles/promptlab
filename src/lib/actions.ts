@@ -128,7 +128,7 @@ export async function updatePrompt(
 
     const updated = await prisma.$transaction(async (tx) => {
       const u = await tx.prompt.update({
-        where: { id },
+        where: { id, ...scope },
         data: {
           name: input.name ?? current.name,
           description: input.description ?? current.description,

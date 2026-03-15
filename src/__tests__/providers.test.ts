@@ -46,7 +46,7 @@ const baseOpenAIRequest = {
 }
 
 const baseAnthropicRequest = {
-  model: 'claude-3-5-sonnet-20241022',
+  model: 'claude-sonnet-4-6',
   provider: 'anthropic' as const,
   systemMsg: 'You are helpful.',
   userMsg: 'Hello',
