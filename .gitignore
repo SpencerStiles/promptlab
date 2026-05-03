@@ -7,3 +7,7 @@ dist/
 .DS_Store
 .vercel
 .gstack/
+
+# local tooling
+.claude/
+.context/
